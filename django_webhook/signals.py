@@ -33,13 +33,12 @@ class SignalListener:
     # pylint: disable=unused-argument
     def run(self, sender, created: bool = False, instance=None, **kwargs):
         action_type = None
-        match self.signal_name:
-            case "post_save" if created:
-                action_type = CREATE
-            case "post_save":
-                action_type = UPDATE
-            case "post_delete":
-                action_type = DELETE
+        if self.signal_name == "post_save" and created:
+            action_type = CREATE
+        elif self.signal_name == "post_save":
+            action_type = UPDATE
+        elif self.signal_name == "post_delete":
+            action_type = DELETE
 
         topic = f"{self.model_label}/{action_type}"
         webhook_ids = _find_webhooks(topic)
