@@ -1,5 +1,6 @@
 import pytest
 from freezegun import freeze_time
+from unittest.mock import patch
 
 from django_webhook.tasks import fire_webhook
 from django_webhook.test_factories import (
@@ -54,3 +55,24 @@ def test_multiple_signatures(responses):
         h["Django-Webhook-Signature-v1"]
         == "7cde1ddd304f5e4c88fe5429cbe318ce83fd1f610a8004c8cafc20bc3289661f,28e85307029745b99e205c6003a4a5a7aa44f95f950a4cf44dfaa95df4a73d0c"
     )
+
+
+def test_webhook_request_uses_timeout():
+    """Test that webhook requests include a 10-second timeout"""
+    webhook = WebhookFactory(
+        secrets__token="test-token",
+        topics=[WebhookTopicFactory(name="tests.User/create")],
+    )
+
+    with patch("django_webhook.tasks.Session") as mock_session_class:
+        mock_session = mock_session_class.return_value
+        mock_response = mock_session.send.return_value
+        mock_response.raise_for_status.return_value = None
+
+        fire_webhook.delay(webhook.id, payload='{"hello": "world"}')
+
+        # Verify that send was called with timeout=10
+        mock_session.send.assert_called_once()
+        args, kwargs = mock_session.send.call_args
+        assert "timeout" in kwargs
+        assert kwargs["timeout"] == 10

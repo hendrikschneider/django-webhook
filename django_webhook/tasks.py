@@ -48,7 +48,7 @@ def fire_webhook(
             topic=topic,
         )
     try:
-        Session().send(req).raise_for_status()
+        Session().send(req, timeout=10).raise_for_status()
         if store_events:
             WebhookEvent.objects.filter(id=event.id).update(status=states.SUCCESS)
     except RequestException as ex:
