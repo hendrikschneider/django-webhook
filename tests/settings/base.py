@@ -75,5 +75,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 CELERY_BROKER_URL = "redis://redis:6379/"
 
 DJANGO_WEBHOOK = dict(
-    MODELS=["tests.Country", "tests.User", "tests.ModelWithFileField"]
+    MODELS=["tests.Country", "tests.User", "tests.ModelWithFileField"],
+    USE_CACHE=False,  # Disable caching in tests to prevent test pollution
 )

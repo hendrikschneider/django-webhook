@@ -9,9 +9,10 @@ class WebhooksConfig(AppConfig):
 
     def ready(self):
         # --- SAFE: no DB access here --------------------
-        import django_webhook.checks  # noqa: F401
+        import django_webhook.checks  # noqa: F401  # pylint: disable=unused-import
 
         from django_webhook.signals import connect_signals
+
         connect_signals()
 
         # --- DB-dependent logic: defer until DB exists ---
@@ -24,4 +25,5 @@ class WebhooksConfig(AppConfig):
     @staticmethod
     def _populate_topics(**kwargs):
         from django_webhook.models import populate_topics_from_settings
+
         populate_topics_from_settings()
