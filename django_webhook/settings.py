@@ -6,6 +6,7 @@ defaults = dict(
     STORE_EVENTS=True,
     EVENTS_RETENTION_DAYS=30,
     USE_CACHE=True,
+    CELERY_QUEUE=None,
 )
 
 
