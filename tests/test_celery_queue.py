@@ -2,7 +2,7 @@ import pytest
 from django.test import override_settings
 
 from django_webhook.models import WebhookTopic
-from django_webhook.test_factories import WebhookFactory, WebhookTopicFactory
+from django_webhook.test_factories import WebhookFactory
 
 from tests.model_data import TEST_JOIN_DATE, TEST_LAST_ACTIVE
 from tests.models import User

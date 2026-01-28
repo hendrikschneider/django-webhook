@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pytest
 from freezegun import freeze_time
-from unittest.mock import patch
 
 from django_webhook.tasks import fire_webhook
 from django_webhook.test_factories import (
