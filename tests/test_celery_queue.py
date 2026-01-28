@@ -1,6 +1,5 @@
 import pytest
 from django.test import override_settings
-from unittest.mock import patch
 
 from django_webhook.models import WebhookTopic
 from django_webhook.test_factories import WebhookFactory, WebhookTopicFactory
