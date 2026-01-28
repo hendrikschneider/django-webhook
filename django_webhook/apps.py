@@ -9,7 +9,7 @@ class WebhooksConfig(AppConfig):
 
     def ready(self):
         # --- SAFE: no DB access here --------------------
-        import django_webhook.checks  # noqa: F401  # pylint: disable=unused-import,import-outside-toplevel
+        import django_webhook.checks  # noqa: F401  # pylint: disable=unused-import
 
         from django_webhook.signals import connect_signals
 
