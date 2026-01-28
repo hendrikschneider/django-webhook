@@ -52,7 +52,7 @@ class SignalListener:
                 webhook_uuid=str(uuid),
             )
             payload = json.dumps(payload_dict, cls=encoder_cls)
-            
+
             # Get the configured Celery queue, if any
             celery_queue = get_settings().get("CELERY_QUEUE")
             if celery_queue:

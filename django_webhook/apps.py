@@ -12,6 +12,7 @@ class WebhooksConfig(AppConfig):
         import django_webhook.checks  # noqa: F401
 
         from django_webhook.signals import connect_signals
+
         connect_signals()
 
         # --- DB-dependent logic: defer until DB exists ---
@@ -24,4 +25,5 @@ class WebhooksConfig(AppConfig):
     @staticmethod
     def _populate_topics(**kwargs):
         from django_webhook.models import populate_topics_from_settings
+
         populate_topics_from_settings()
