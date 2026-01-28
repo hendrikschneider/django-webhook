@@ -42,6 +42,8 @@ class WebhookTopicFactory(factory.django.DjangoModelFactory):
         model = WebhookTopic
         django_get_or_create = ("name",)
 
+    name = factory.Sequence(lambda n: f"tests.Model{n}/create")
+
 
 class WebhookEventFactory(factory.django.DjangoModelFactory):
     class Meta:
