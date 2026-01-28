@@ -52,12 +52,22 @@ class SignalListener:
                 webhook_uuid=str(uuid),
             )
             payload = json.dumps(payload_dict, cls=encoder_cls)
-            fire_webhook.delay(
-                id,
-                payload,
-                topic=topic,
-                object_type=self.model_label,
-            )
+            
+            # Get the configured Celery queue, if any
+            celery_queue = get_settings().get("CELERY_QUEUE")
+            if celery_queue:
+                fire_webhook.apply_async(
+                    args=(id, payload),
+                    kwargs=dict(topic=topic, object_type=self.model_label),
+                    queue=celery_queue,
+                )
+            else:
+                fire_webhook.delay(
+                    id,
+                    payload,
+                    topic=topic,
+                    object_type=self.model_label,
+                )
 
     def connect(self):
         self.signal.connect(

@@ -16,16 +16,44 @@ tasks run a worker:
 celery -A config.settings.celery:app worker -Q celery
 ```
 
-## Using a dedicated worker
+## Using a dedicated queue
 
-If you want to process Django-Webhook tasks separately from your other tasks you need to use [task
-routing](https://docs.celeryq.dev/en/stable/userguide/routing.html#routing-tasks), a separate queue and start a separate worker. This could be to:
+If you want to process Django-Webhook tasks separately from your other tasks, you can configure a
+dedicated Celery queue in your Django settings. This could be to:
 
 - process webhook tasks faster by running multiple workers for the webhooks queue
 - avoid clogging up the default tasks queue with webhook tasks
 - rate limit how many webhooks to send per minute
 
-In your Celery configuration file configure the `task_routes` property:
+### Option 1: Configure the queue in Django settings (Recommended)
+
+You can configure the Celery queue directly in your Django settings by adding `CELERY_QUEUE` to
+the `DJANGO_WEBHOOK` configuration:
+
+```python
+DJANGO_WEBHOOK = dict(
+    MODELS=["core.Product", "users.User"],
+    CELERY_QUEUE="webhooks",  # Use a dedicated queue for webhooks
+)
+```
+
+With this configuration, all webhook tasks will automatically be routed to the "webhooks" queue.
+You now need to run a worker that consumes from the webhooks queue:
+
+```bash
+celery -A config.settings.celery:app worker -Q webhooks
+```
+
+The worker could also consume from multiple queues:
+
+```bash
+celery -A config.settings.celery:app worker -Q celery,webhooks,email
+```
+
+### Option 2: Configure task routing in Celery settings
+
+Alternatively, you can use [task routing](https://docs.celeryq.dev/en/stable/userguide/routing.html#routing-tasks)
+directly in your Celery configuration. In your Celery configuration file configure the `task_routes` property:
 
 ```python
 import os
@@ -57,3 +85,7 @@ The worker could also consume from multiple queues:
 ```bash
 celery -A config.settings.celery:app worker -Q celery,webhooks,email
 ```
+
+**Note:** Option 1 (Django settings) is recommended for most use cases as it keeps all webhook
+configuration in one place. Option 2 (Celery routing) gives you more flexibility if you need
+complex routing rules for multiple task types.
