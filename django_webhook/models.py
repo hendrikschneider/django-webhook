@@ -13,6 +13,10 @@ from .validators import validate_topic_model
 
 topic_regex = r"\w+\.\w+\/[create|update|delete]"
 
+# Long enough for signed trigger URLs (Power Automate, Zapier, Make), which
+# routinely exceed Django's URLField default of 200 characters.
+URL_MAX_LENGTH = 2048
+
 STATES = [
     (states.PENDING, states.PENDING),
     (states.FAILURE, states.FAILURE),
@@ -21,7 +25,7 @@ STATES = [
 
 
 class Webhook(models.Model):
-    url = models.URLField()
+    url = models.URLField(max_length=URL_MAX_LENGTH)
     topics = models.ManyToManyField(
         "django_webhook.WebhookTopic",
         related_name="webhooks",
@@ -89,7 +93,7 @@ class WebhookEvent(models.Model):
         editable=False,
     )
     created = DateTimeField(auto_now_add=True)
-    url = models.URLField(editable=False)
+    url = models.URLField(max_length=URL_MAX_LENGTH, editable=False)
     topic = models.CharField(max_length=250, null=True, editable=False)
 
 
